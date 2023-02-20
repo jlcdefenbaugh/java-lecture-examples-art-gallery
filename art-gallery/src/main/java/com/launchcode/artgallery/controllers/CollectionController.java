@@ -1,27 +1,36 @@
 package com.launchcode.artgallery.controllers;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 @Controller
-@ResponseBody // TODO: Remove this once templates are being used
 @RequestMapping("/collection")
 public class CollectionController {
+
+    public static final List<String> artCollection = new ArrayList<>(
+//            Arrays.asList(
+//                    "Girl with a Pearl Earring",
+//                    "Mona Lisa",
+//                    "The Birth of Venus"
+//            )
+    );
 
     // TODO: Convert this to use a template, collection.html
     // TODO: Pass list, artCollection, to template
     // Corresponds to http://localhost:8080/collection
     @GetMapping("")
-    public String displayCollectionPage() {
+    public String displayCollectionPage(Model model) {
+
         System.out.println("\n*** Collection page content requested");
-        return "<p>We have an extensive collection of fine art.</p>" +
-                "<ul>" +
-                "<li>Girl with a Pearl Earring</li>" +
-                "<li>Mona Lisa</li>" +
-                "<li>The Birth of Venus</li>" +
-                "<li>The Persistence of Memory</li>" +
-                "<li>The Starry Night</li>" +
-                "</ul>";
+        Collections.sort(artCollection);
+        model.addAttribute("collection", artCollection);
+        return "collection/index";
     }
 
     // TODO: Convert this to use a template, add-art-form.html
@@ -29,19 +38,18 @@ public class CollectionController {
     @GetMapping("/add")
     public String displayAddArtForm() {
         System.out.println("\n*** GET request submitted for form content");
-        return "<html>" +
-                "<body>" +
-                "<form action='/collection' method='POST'>" +
-                "<p>Ooh! New art! What is it called?</p>" +
-                "<input type='text' name='artwork' />" +
-                "<button type='submit'>Add to Collection</button>" +
-                "</form>" +
-                "</body>" +
-                "</html>";
+        return "collection/add-art-form";
     }
 
     // TODO: Create a POST handler for /add
     // Should add name of artwork to collection list
     // Then should redirect to /collection
+
+    @PostMapping("/add")
+    public String processAddArtForm(@RequestParam String artwork) {
+        artCollection.add(artwork);
+        return "redirect:/collection";
+
+    }
 
 }
